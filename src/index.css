@@ -36,10 +36,92 @@ textarea {
 }
 
 ::selection {
-  background: rgba(93, 227, 255, 0.2);
+  background: rgba(0, 229, 255, 0.3);
   color: #ffffff;
 }
 
 .game-canvas {
   touch-action: none;
+}
+
+/* Utility classes for glass morphism */
+@layer components {
+  .glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
+  }
+
+  .glass-md {
+    @apply bg-white/8 backdrop-blur-lg border border-white/15;
+  }
+
+  /* Card utilities */
+  .card-base {
+    @apply rounded-xl border border-white/10 bg-gradient-to-br from-dark-800 to-dark-700 shadow-card transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply hover:border-accent-cyan/30 hover:shadow-card-hover hover:from-dark-700 hover:to-dark-600 cursor-pointer;
+  }
+
+  /* Text utilities */
+  .text-glow {
+    @apply text-accent-cyan drop-shadow-lg;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-accent-cyan to-accent-purple bg-clip-text text-transparent;
+  }
+
+  /* Button base styles */
+  .btn-base {
+    @apply px-4 py-2.5 rounded-lg font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent-cyan disabled:opacity-50 disabled:pointer-events-none;
+  }
+
+  .btn-primary {
+    @apply btn-base bg-accent-cyan text-dark-900 hover:shadow-glow-md hover:shadow-cyan-500/50 active:scale-95;
+  }
+
+  .btn-secondary {
+    @apply btn-base bg-dark-700 text-white border border-white/20 hover:border-accent-cyan/50 hover:bg-dark-600;
+  }
+
+  .btn-ghost {
+    @apply btn-base bg-transparent text-white hover:bg-white/10;
+  }
+
+  /* Input base styles */
+  .input-base {
+    @apply px-4 py-2.5 rounded-lg bg-dark-800 border border-white/15 text-white placeholder:text-white/40 transition-all duration-200 focus:outline-none focus:border-accent-cyan focus:ring-2 focus:ring-accent-cyan/30;
+  }
+
+  /* Badge utilities */
+  .badge-base {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-primary {
+    @apply badge-base bg-accent-cyan/20 text-accent-cyan border border-accent-cyan/30;
+  }
+
+  .badge-success {
+    @apply badge-base bg-green-500/20 text-green-400 border border-green-500/30;
+  }
+
+  .badge-danger {
+    @apply badge-base bg-red-500/20 text-red-400 border border-red-500/30;
+  }
+
+  /* Page transitions */
+  .fade-in {
+    @apply animate-fade-in;
+  }
+
+  .slide-up {
+    @apply animate-slide-up;
+  }
+
+  /* Touch-friendly sizes */
+  .touch-target {
+    @apply min-h-12 min-w-12;
+  }
 }

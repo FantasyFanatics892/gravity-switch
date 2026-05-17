@@ -3,58 +3,94 @@ import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
 import { GamePage, LeaderboardPage } from './pages'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/Card'
+import { Badge } from '@/components/ui/Badge'
 import { cn } from '@/lib/utils'
 
 function AppShell() {
   const auth = useAuth()
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(93,227,255,0.16),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(79,70,229,0.18),_transparent_36%),linear-gradient(180deg,#050816_0%,#090d1f_100%)] text-white">
-      <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-4 rounded-[32px] border border-white/10 bg-slate-950/85 p-5 shadow-2xl backdrop-blur sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.36em] text-game-player">Gravity Switch</p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Play, compete, and climb the leaderboard</h1>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900 text-white">
+      {/* Decorative background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-accent-cyan/5 rounded-full blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 w-80 h-80 bg-accent-purple/5 rounded-full blur-3xl" />
+      </div>
 
-          <div className="grid gap-3 sm:auto-cols-min sm:grid-flow-col sm:items-center">
-            <div className="rounded-3xl bg-slate-900/90 px-4 py-3 shadow-sm ring-1 ring-white/10">
-              <p className="text-xs uppercase tracking-[0.32em] text-slate-400">Player</p>
-              <p className="mt-2 text-lg font-semibold text-white">{auth.user?.username}</p>
-              <p className="mt-1 text-sm text-slate-400">Top score: {auth.user?.topScore}</p>
+      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <header className="animate-fade-in">
+          <Card padding="lg" className="space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6">
+              <div className="space-y-3">
+                <Badge variant="primary" size="sm">
+                  Gravity Switch
+                </Badge>
+                <h1 className="text-4xl sm:text-5xl font-bold text-white leading-tight">
+                  Play, compete,<br className="hidden sm:block" /> climb the ranks
+                </h1>
+                <p className="text-white/60 max-w-sm">
+                  Join players worldwide and prove you&apos;re the best at dodging gravity.
+                </p>
+              </div>
+
+              {/* Player info section */}
+              <div className="flex flex-col sm:items-end gap-4">
+                <div className="card-base p-4 w-full sm:w-auto">
+                  <p className="text-xs uppercase tracking-wider text-white/50 font-medium">Player</p>
+                  <p className="mt-2 text-2xl font-bold text-accent-cyan">{auth.user?.username}</p>
+                  <p className="mt-1 text-sm text-white/60">Best: {auth.user?.topScore} points</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={auth.logout}
+                  className="touch-target"
+                >
+                  Sign out
+                </Button>
+              </div>
             </div>
-            <Button variant="outline" onClick={auth.logout}>Sign out</Button>
-          </div>
+          </Card>
         </header>
 
-        <nav className="grid grid-cols-2 gap-3 rounded-[28px] border border-white/10 bg-slate-950/85 p-4 shadow-inner sm:grid-cols-3">
+        {/* Navigation tabs */}
+        <nav className="flex gap-2 rounded-lg bg-dark-800/50 border border-white/10 p-1">
           <NavLink
             to="/play"
             className={({ isActive }) =>
               cn(
-                'rounded-2xl px-4 py-3 text-center text-sm font-semibold transition',
-                isActive ? 'bg-game-player text-slate-950 shadow-[0_20px_50px_-30px_rgba(93,227,255,0.9)]' : 'bg-white/5 text-slate-200 hover:bg-white/10',
+                'flex-1 px-4 py-3 rounded-md font-medium transition-all duration-200 text-center',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan',
+                isActive
+                  ? 'bg-accent-cyan text-dark-900 shadow-glow-md'
+                  : 'text-white/60 hover:text-white hover:bg-white/10',
               )
             }
           >
-            Play
+            🎮 Play
           </NavLink>
           <NavLink
             to="/leaderboard"
             className={({ isActive }) =>
               cn(
-                'rounded-2xl px-4 py-3 text-center text-sm font-semibold transition',
-                isActive ? 'bg-game-player text-slate-950 shadow-[0_20px_50px_-30px_rgba(93,227,255,0.9)]' : 'bg-white/5 text-slate-200 hover:bg-white/10',
+                'flex-1 px-4 py-3 rounded-md font-medium transition-all duration-200 text-center',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-cyan',
+                isActive
+                  ? 'bg-accent-cyan text-dark-900 shadow-glow-md'
+                  : 'text-white/60 hover:text-white hover:bg-white/10',
               )
             }
           >
-            Leaderboard
+            🏆 Leaderboard
           </NavLink>
-          <div className="hidden rounded-2xl bg-white/5 px-4 py-3 text-center text-sm text-slate-300 sm:block">
-            Game stats stay synced with the local database backend.
+          <div className="hidden sm:flex items-center px-4 py-3 text-xs text-white/40 font-medium">
+            All scores synced in real-time
           </div>
         </nav>
 
+        {/* Main content */}
         <main className="flex-1">
           <Routes>
             <Route path="/play" element={<GamePage />} />
@@ -62,6 +98,11 @@ function AppShell() {
             <Route path="*" element={<Navigate to="/play" replace />} />
           </Routes>
         </main>
+
+        {/* Footer */}
+        <footer className="border-t border-white/10 pt-6 pb-4 text-center text-xs text-white/40">
+          <p>Gravity Switch • Built with precision and passion</p>
+        </footer>
       </div>
     </div>
   )
