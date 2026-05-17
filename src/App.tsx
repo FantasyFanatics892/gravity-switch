@@ -1,68 +1,128 @@
 import './App.css'
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
-import { GamePage, LeaderboardPage } from './pages'
+import { AuthPage, GamePage, LeaderboardPage } from './pages'
 import { Button } from '@/components/ui/button'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { cn } from '@/lib/utils'
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const auth = useAuth()
+
+  if (auth.loading) {
+    return <LoadingSpinner />
+  }
+
+  if (!auth.user) {
+    return <Navigate to="/login" replace />
+  }
+
+  return <>{children}</>
+}
+
+function AuthLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center px-4">
+      {children}
+    </div>
+  )
+}
 
 function AppShell() {
   const auth = useAuth()
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(93,227,255,0.16),_transparent_42%),radial-gradient(circle_at_bottom_right,_rgba(79,70,229,0.18),_transparent_36%),linear-gradient(180deg,#050816_0%,#090d1f_100%)] text-white">
-      <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-6 px-4 py-4 sm:px-6 lg:px-8">
-        <header className="flex flex-col gap-4 rounded-[32px] border border-white/10 bg-slate-950/85 p-5 shadow-2xl backdrop-blur sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.36em] text-game-player">Gravity Switch</p>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">Play, compete, and climb the leaderboard</h1>
-          </div>
-
-          <div className="grid gap-3 sm:auto-cols-min sm:grid-flow-col sm:items-center">
-            <div className="rounded-3xl bg-slate-900/90 px-4 py-3 shadow-sm ring-1 ring-white/10">
-              <p className="text-xs uppercase tracking-[0.32em] text-slate-400">Player</p>
-              <p className="mt-2 text-lg font-semibold text-white">{auth.user?.username}</p>
-              <p className="mt-1 text-sm text-slate-400">Top score: {auth.user?.topScore}</p>
+    <div className="min-h-screen bg-slate-900 text-white flex flex-col">
+      {/* Header - only show for authenticated users */}
+      {auth.user && (
+        <header className="border-b border-slate-700 px-4 py-4 sm:px-6">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">Gravity Switch</h1>
+              <p className="text-sm text-slate-400">Player: {auth.user.username}</p>
             </div>
-            <Button variant="outline" onClick={auth.logout}>Sign out</Button>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-xs text-slate-400">Best Score</p>
+                <p className="text-xl font-bold text-cyan-400">{auth.user.topScore}</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={auth.logout}>
+                Sign out
+              </Button>
+            </div>
           </div>
         </header>
+      )}
 
-        <nav className="grid grid-cols-2 gap-3 rounded-[28px] border border-white/10 bg-slate-950/85 p-4 shadow-inner sm:grid-cols-3">
-          <NavLink
-            to="/play"
-            className={({ isActive }) =>
-              cn(
-                'rounded-2xl px-4 py-3 text-center text-sm font-semibold transition',
-                isActive ? 'bg-game-player text-slate-950 shadow-[0_20px_50px_-30px_rgba(93,227,255,0.9)]' : 'bg-white/5 text-slate-200 hover:bg-white/10',
-              )
-            }
-          >
-            Play
-          </NavLink>
-          <NavLink
-            to="/leaderboard"
-            className={({ isActive }) =>
-              cn(
-                'rounded-2xl px-4 py-3 text-center text-sm font-semibold transition',
-                isActive ? 'bg-game-player text-slate-950 shadow-[0_20px_50px_-30px_rgba(93,227,255,0.9)]' : 'bg-white/5 text-slate-200 hover:bg-white/10',
-              )
-            }
-          >
-            Leaderboard
-          </NavLink>
-          <div className="hidden rounded-2xl bg-white/5 px-4 py-3 text-center text-sm text-slate-300 sm:block">
-            Game stats stay synced with the local database backend.
+      {/* Navigation - only show for authenticated users */}
+      {auth.user && (
+        <nav className="border-b border-slate-700 px-4 py-3 sm:px-6">
+          <div className="max-w-7xl mx-auto flex gap-4">
+            <NavLink
+              to="/game"
+              className={({ isActive }) =>
+                cn(
+                  'px-4 py-2 rounded font-medium transition',
+                  isActive ? 'bg-cyan-600 text-white' : 'text-slate-300 hover:text-white'
+                )
+              }
+            >
+              Play
+            </NavLink>
+            <NavLink
+              to="/leaderboard"
+              className={({ isActive }) =>
+                cn(
+                  'px-4 py-2 rounded font-medium transition',
+                  isActive ? 'bg-cyan-600 text-white' : 'text-slate-300 hover:text-white'
+                )
+              }
+            >
+              Leaderboard
+            </NavLink>
           </div>
         </nav>
+      )}
 
-        <main className="flex-1">
-          <Routes>
-            <Route path="/play" element={<GamePage />} />
-            <Route path="/leaderboard" element={<LeaderboardPage />} />
-            <Route path="*" element={<Navigate to="/play" replace />} />
-          </Routes>
-        </main>
-      </div>
+      {/* Main content */}
+      <main className="flex-1">
+        <Routes>
+          {/* Auth routes */}
+          <Route
+            path="/login"
+            element={auth.user ? <Navigate to="/game" replace /> : <AuthLayout><AuthPage mode="login" /></AuthLayout>}
+          />
+          <Route
+            path="/register"
+            element={auth.user ? <Navigate to="/game" replace /> : <AuthLayout><AuthPage mode="register" /></AuthLayout>}
+          />
+
+          {/* Protected routes */}
+          <Route
+            path="/game"
+            element={
+              <ProtectedRoute>
+                <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6">
+                  <GamePage />
+                </div>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6">
+                  <LeaderboardPage />
+                </div>
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Default redirect */}
+          <Route path="*" element={<Navigate to={auth.user ? '/game' : '/login'} replace />} />
+        </Routes>
+      </main>
     </div>
   )
 }

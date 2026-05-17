@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 export function GamePage() {
   const auth = useAuth()
   const [topScore, setTopScore] = useState(auth.user?.topScore ?? 0)
-  const [status, setStatus] = useState('Tap the game area or press space to start')
+  const [status, setStatus] = useState('Ready to play')
   const [saving, setSaving] = useState(false)
 
   const handleGameOver = async (score: number) => {
@@ -23,60 +23,54 @@ export function GamePage() {
       await auth.refreshUser()
       setStatus(`New record! ${response.topScore} points`)
     } catch {
-      setStatus('Unable to save score. Try again after refresh.')
+      setStatus('Unable to save score. Try again.')
     } finally {
       setSaving(false)
     }
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
-      <section className="rounded-[32px] border border-white/10 bg-slate-950/80 p-5 shadow-2xl backdrop-blur">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-game-player">Play mode</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">Gravity switch challenge</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-400">
-              Flip gravity, dodge hazards, and try to beat your own best score. Higher scores sync automatically to the leaderboard.
-            </p>
-          </div>
-          <div className="rounded-3xl bg-white/5 px-4 py-3 text-sm text-slate-200">
-            <span className="block text-slate-400">Best score</span>
-            <span className="mt-1 block text-lg font-semibold text-white">{topScore}</span>
-          </div>
+    <div className="space-y-6">
+      {/* Game info */}
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold text-white">Play Game</h2>
+        <div className="flex justify-between items-baseline">
+          <p className="text-sm text-slate-400">Best score: {topScore}</p>
+          <p className="text-sm text-cyan-400">{status}</p>
         </div>
+      </div>
 
-        <div className="rounded-[32px] border border-white/10 bg-[#09111d]/90 p-4 shadow-inner">
-          <Game initialHighScore={topScore} onGameOver={handleGameOver} />
-        </div>
-      </section>
+      {/* Game area */}
+      <div className="border border-slate-700 rounded bg-slate-800 p-4">
+        <Game initialHighScore={topScore} onGameOver={handleGameOver} />
+      </div>
 
-      <aside className="space-y-6">
-        <section className="rounded-[32px] border border-white/10 bg-slate-950/80 p-5 shadow-2xl backdrop-blur">
-          <p className="text-xs uppercase tracking-[0.3em] text-game-player">Status</p>
-          <p className="mt-4 text-lg font-semibold text-white">{status}</p>
-          <p className="mt-3 text-sm leading-6 text-slate-400">
-            Keep your focus and touch or click anywhere inside the game area to flip gravity. The score updates after each obstacle you pass.
+      {/* Controls and tips */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <div>
+          <h3 className="font-semibold text-white mb-2">How to play</h3>
+          <p className="text-sm text-slate-400 leading-relaxed">
+            Click or tap the game area to flip gravity. Dodge hazards and beat your best score. Progress syncs automatically.
           </p>
           <Button
-            type="button"
-            variant="outline"
-            className="mt-6 w-full"
+            variant="secondary"
+            size="sm"
+            className="mt-4"
             disabled={saving}
           >
-            {saving ? 'Saving...' : 'Score syncing enabled'}
+            {saving ? 'Syncing...' : 'Syncing enabled'}
           </Button>
-        </section>
+        </div>
 
-        <section className="rounded-[32px] border border-white/10 bg-slate-950/80 p-5 shadow-2xl backdrop-blur">
-          <p className="text-xs uppercase tracking-[0.3em] text-game-player">Quick tips</p>
-          <ul className="mt-4 space-y-3 text-sm text-slate-400">
-            <li>• Keep rhythm with the obstacles and avoid panic flips.</li>
-            <li>• Tap or click only once every few hundred milliseconds for better control.</li>
-            <li>• Higher score means better leaderboard placement.</li>
+        <div>
+          <h3 className="font-semibold text-white mb-2">Tips</h3>
+          <ul className="text-sm text-slate-400 space-y-2">
+            <li>Keep rhythm with obstacles</li>
+            <li>Avoid panic flips</li>
+            <li>Higher scores rank better</li>
           </ul>
-        </section>
-      </aside>
+        </div>
+      </div>
     </div>
   )
 }
