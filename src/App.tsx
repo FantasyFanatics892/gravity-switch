@@ -1,7 +1,7 @@
 import './App.css'
 import { NavLink, Navigate, Route, Routes } from 'react-router-dom'
 import { AuthProvider, useAuth } from '@/context/AuthContext'
-import { AuthPage, GamePage, LeaderboardPage } from './pages'
+import { AuthPage, GamePage, LeaderboardPage, LandingPage } from './pages'
 import { Button } from '@/components/ui/button'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { cn } from '@/lib/utils'
@@ -87,6 +87,9 @@ function AppShell() {
       {/* Main content */}
       <main className="flex-1">
         <Routes>
+          {/* Landing page - visible to all */}
+          <Route path="/" element={<LandingPage />} />
+
           {/* Auth routes */}
           <Route
             path="/login"
@@ -119,8 +122,8 @@ function AppShell() {
             }
           />
 
-          {/* Default redirect */}
-          <Route path="*" element={<Navigate to={auth.user ? '/game' : '/login'} replace />} />
+          {/* Default redirect for authenticated users to game */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>
