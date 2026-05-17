@@ -20,58 +20,65 @@ export function LeaderboardPage() {
 
   const currentUsername = auth.user?.username
 
+  if (loading) {
+    return <LoadingSpinner />
+  }
+
+  if (error) {
+    return <div className="text-red-400 text-center py-8">{error}</div>
+  }
+
+  if (entries.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-white mb-2">No scores yet</p>
+        <p className="text-slate-400 text-sm">Play the game to appear on the leaderboard</p>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-6">
-      <section className="rounded-[32px] border border-white/10 bg-slate-950/80 p-6 shadow-2xl backdrop-blur">
-        <div className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.3em] text-game-player">Leaderboard</p>
-          <h2 className="text-3xl font-semibold text-white">Top 50 players</h2>
-          <p className="max-w-2xl text-sm leading-6 text-slate-400">
-            Global ranking is sorted by best recorded score. Your current position is highlighted so you can track progress.
-          </p>
-        </div>
-      </section>
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold text-white">Leaderboard</h2>
 
-      <section className="rounded-[32px] border border-white/10 bg-slate-950/80 p-4 shadow-2xl backdrop-blur">
-        {loading ? (
-          <LoadingSpinner />
-        ) : error ? (
-          <div className="rounded-3xl border border-red-500/20 bg-red-500/10 p-6 text-sm text-red-200">{error}</div>
-        ) : entries.length === 0 ? (
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center text-sm text-slate-300">
-            No players have saved scores yet. Play the game and submit a new high score to appear here.
-          </div>
-        ) : (
-          <div className="overflow-hidden rounded-[28px] border border-white/10 bg-[#09111d]/90 shadow-inner">
-            <div className="hidden grid-cols-[72px_1fr_120px] items-center gap-4 border-b border-white/10 px-6 py-4 text-xs uppercase tracking-[0.3em] text-slate-500 sm:grid">
-              <span>Rank</span>
-              <span>Player</span>
-              <span>Top score</span>
-            </div>
+      {/* Table */}
+      <div className="border border-slate-700 rounded overflow-hidden">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-slate-800 border-b border-slate-700">
+              <th className="px-4 py-3 text-left text-sm font-medium text-slate-300">Rank</th>
+              <th className="px-4 py-3 text-left text-sm font-medium text-slate-300">Player</th>
+              <th className="px-4 py-3 text-right text-sm font-medium text-slate-300">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => {
+              const isCurrent = currentUsername === entry.username
+              const medal = entry.rank === 1 ? '🥇' : entry.rank === 2 ? '🥈' : entry.rank === 3 ? '🥉' : ''
 
-            <div className="divide-y divide-white/5">
-              {entries.map((entry) => {
-                const isCurrent = currentUsername === entry.username
-                return (
-                  <div
-                    key={`${entry.username}-${entry.rank}`}
-                    className={`flex flex-col gap-3 px-5 py-4 sm:grid sm:grid-cols-[72px_1fr_120px] sm:items-center sm:gap-0 ${
-                      isCurrent ? 'bg-game-player/10 text-white' : 'bg-transparent text-slate-200'
-                    }`}
-                  >
-                    <span className="text-lg font-semibold">#{entry.rank}</span>
-                    <div className="space-y-1">
-                      <p className="font-semibold">{entry.username}</p>
-                      {isCurrent && <p className="text-xs uppercase tracking-[0.3em] text-game-player">Your position</p>}
-                    </div>
-                    <span className="font-semibold text-game-player sm:text-right">{entry.topScore}</span>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-      </section>
+              return (
+                <tr
+                  key={`${entry.username}-${entry.rank}`}
+                  className={`border-b border-slate-700 last:border-0 ${
+                    isCurrent ? 'bg-slate-800' : 'hover:bg-slate-800/50'
+                  }`}
+                >
+                  <td className="px-4 py-3 text-sm">
+                    {medal ? <span className="text-lg">{medal}</span> : <span className="text-slate-400">#{entry.rank}</span>}
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <span className="text-white font-medium">{entry.username}</span>
+                    {isCurrent && <span className="text-cyan-400 text-xs ml-2">(You)</span>}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-right font-semibold text-cyan-400">
+                    {entry.topScore}
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }

@@ -14,7 +14,16 @@ export default {
           player: '#00ff88',
           spike: '#ff4757',
           block: '#4cc9f0',
-        }
+        },
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.3s ease-out',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
       },
     },
   },
